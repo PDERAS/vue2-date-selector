@@ -52,16 +52,18 @@
         name: 'date-selector',
 
         props: {
-            value: {
-                type:       [ 'String', 'Object' ],
-                default:    () => new Date()
-            },
-
             amountOfYears: {
                 type:       [String, Number],
                 default:    20,
                 validator:  val => {
                     return Number(val);
+                }
+            },
+
+            value: {
+                default:    () => new Date(),
+                validator:  val => {
+                    return String(val) || val instanceof Date
                 }
             }
         },
@@ -69,7 +71,7 @@
         data: () => ({
             day:    null,
             month:  null,
-            year:    null
+            year:   null
         }),
 
         mounted() {
