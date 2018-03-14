@@ -53,28 +53,30 @@
 
         props: {
             amountOfYears: {
-                type:       [String, Number],
+                type:       [ String, Number ],
                 default:    20,
-                validator:  val => {
+                validator:  function(val) {
                     return Number(val);
                 }
             },
 
             value: {
-                default:    () => new Date(),
-                validator:  val => {
-                    return String(val) || val instanceof Date
+                default:    function() { new Date() },
+                validator:  function(val) {
+                    return String(val) || val instanceof Date;
                 }
             }
         },
 
-        data: () => ({
-            day:    null,
-            month:  null,
-            year:   null
-        }),
+        data: function() {
+            return {
+                day:    null,
+                month:  null,
+                year:   null
+            }
+        },
 
-        mounted() {
+        mounted: function() {
             if (this.value && !(this.value instanceof Date)) {
                 var date = this.value.split(' ')[0];
                 this.day = Number(date.split('-')[2]);
@@ -88,7 +90,7 @@
         },
 
         computed: {
-            days() {
+            days: function() {
                 var thirtyOneDayMonths = [1, 3, 5, 7, 8, 10, 12];
                 var thirtyDayMonths = [4, 6, 9, 11];
 
@@ -109,7 +111,7 @@
                 }
             },
 
-            years() {
+            years: function() {
                 var years = [];
                 var currentYear = new Date();
                 for (var yyyy = currentYear.getFullYear(); yyyy >= currentYear.getFullYear() - this.amountOfYears; yyyy--) {
@@ -121,7 +123,7 @@
         },
 
         methods: {
-            update(e, type) {
+            update: function(e, type) {
                 switch (type) {
                     case 'd':
                         this.day = Number(e.target.value);
