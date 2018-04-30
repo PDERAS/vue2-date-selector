@@ -7,19 +7,19 @@
                     class="form-control"
                     name="birthday-m"
                     required>
-                <option disabled :value="null" selected>Month</option>
-                <option value="1">Jan</option>
-                <option value="2">Feb</option>
-                <option value="3">Mar</option>
-                <option value="4">Apr</option>
-                <option value="5">May</option>
-                <option value="6">Jun</option>
-                <option value="7">Jul</option>
-                <option value="8">Aug</option>
-                <option value="9">Sep</option>
-                <option value="10">Oct</option>
-                <option value="11">Nov</option>
-                <option value="12">Dec</option>
+                <option disabled :value="null" selected>formatLabel('Month')</option>
+                <option value="1">formatLabel('Jan')</option>
+                <option value="2">formatLabel('Feb')</option>
+                <option value="3">formatLabel('Mar')</option>
+                <option value="4">formatLabel('Apr')</option>
+                <option value="5">formatLabel('May')</option>
+                <option value="6">formatLabel('Jun')</option>
+                <option value="7">formatLabel('Jul')</option>
+                <option value="8">formatLabel('Aug')</option>
+                <option value="9">formatLabel('Sep')</option>
+                <option value="10">formatLabel('Oct')</option>
+                <option value="11">formatLabel('Nov')</option>
+                <option value="12">formatLabel('Dec')</option>
             </select>
         </div>
         <div id="date-selector-day">
@@ -29,7 +29,7 @@
                     class="form-control"
                     name="birthday-d"
                     required>
-                <option disabled :value="null" selected>Day</option>
+                <option disabled :value="null" selected>formatLabel('Day')</option>
                 <option v-for="d in days" :value="d">{{ d }}</option>
             </select>
         </div>
@@ -40,7 +40,7 @@
                     class="form-control"
                     name="birthday-y"
                     required>
-                <option disabled :value="null" selected>Year</option>
+                <option disabled :value="null" selected>formatLabel('Year')</option>
                 <option v-for="year in years" :value="year">{{ year }}</option>
             </select>
         </div>
@@ -58,6 +58,11 @@
                 validator:  function(val) {
                     return Number(val);
                 }
+            },
+
+            useUpperCase: {
+                type: Boolean,
+                default: false
             },
 
             value: {
@@ -123,6 +128,10 @@
         },
 
         methods: {
+            formatLabel: function(label) {
+                return this.useUpperCase ? label.toUpperCase() : label;
+            },
+
             update: function(e, type) {
                 switch (type) {
                     case 'd':

@@ -22,6 +22,7 @@ Vue moola is easily created, and has many properties that can be changed.
 | Property      | Required | Type             | Default | Description                                                             |
 |---------------|:--------:|------------------|---------|-------------------------------------------------------------------------|
 | value         | false    | String&#124;Date | Date()  | Value for the input, can be used with v-model                           |
+| useUpperCase  | false    | Boolean          | false   | Determines if all labels should use upper case formatting               |
 | amountOfYears | false    | Number           | 20      | The amount of years to show in the date selector, from the current year |
 
 #### Styling
