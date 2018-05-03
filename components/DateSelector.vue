@@ -60,6 +60,10 @@
                 }
             },
 
+            disabled: {
+                type: Object
+            },
+
             formatFn: {
                 type: Function,
                 default: (val) =>  { return val; }
@@ -82,38 +86,73 @@
         },
 
         mounted: function() {
-            if (this.value && !(this.value instanceof Date)) {
-                var date = this.value.split(' ')[0];
-                this.day = Number(date.split('-')[2]);
-                this.month = Number(date.split('-')[1]);
-                this.year = Number(date.split('-')[0]);
-            } else if (this.value && (this.value instanceof Date)) {
-                this.day = Number(this.value.getDate());
-                this.month = Number(this.value.getMonth() + 1);
-                this.year = Number(this.value.getFullYear());
+            if (this.value) {
+                var converted = this.convertDate(this.value);
+                var { day, month, year } = converted;
+                this.day = day;
+                this.month = month;
+                this.year = year;
             }
         },
 
         computed: {
+            destructuredDisabled() {
+                var disabled = {};
+                if (this.disabled.to) {
+                    disabled.to = this.convertDate(this.disabled.to);
+                }
+
+                if (this.disabled.from) {
+                    disabled.from = this.convertDate(this.disabled.from);
+                }
+                return disabled;
+            },
+
             days: function() {
-                var thirtyOneDayMonths = [1, 3, 5, 7, 8, 10, 12];
-                var thirtyDayMonths = [4, 6, 9, 11];
+                var thirtyOneDayMonths = [1, 3, 5, 7, 8, 10, 12],
+                    thirtyDayMonths = [4, 6, 9, 11],
+                    days = 0;
 
                 if (this.month) {
                     if (thirtyOneDayMonths.indexOf(this.month) > -1) {
-                        return 31;
+                        days = 31;
                     } else if (thirtyDayMonths.indexOf(this.month) > -1) {
-                        return 30;
+                        days = 30;
                     } else {
                         if (this.year && (this.year % 4 == 0)) {
-                            return 29;
+                            days = 29;
                         } else {
-                            return 28;
+                            days = 28;
                         }
                     }
                 } else {
-                    return 31;
+                    days = 31;
                 }
+
+                var values = [];
+                if (this.disabled) {
+                    // If a year or month is not selected all dates are valid
+                    if (!this.year || !this.month) {
+                        for (var i = 1; i <= days; i++) {
+                            values.push(i);
+                        }
+                        return values;
+                    };
+
+                    for (var i = 1; i <= days; i++) {
+                        if (this.validate('day', i)) {
+                            values.push(i);
+                        } else if (this.day === i) {
+                            this.day = null;
+                        }
+                    }
+                    return values;
+                }
+
+                for (var i = 1; i <= days; i++) {
+                    values.push(i);
+                }
+                return values;
             },
 
             years: function() {
@@ -128,6 +167,41 @@
         },
 
         methods: {
+            convertDate(date) {
+                var converted = {
+                    day: null,
+                    month: null,
+                    year: null
+                };
+
+                if (!(date instanceof Date)) {
+                    var temp = date.split(' ')[0];
+                    converted.day = Number(temp.split('-')[2]);
+                    converted.month = Number(temp.split('-')[1]);
+                    converted.year = Number(temp.split('-')[0]);
+                } else if ((date instanceof Date)) {
+                    converted.day = Number(date.getDate());
+                    converted.month = Number(date.getMonth() + 1);
+                    converted.year = Number(date.getFullYear());
+                }
+
+                return converted;
+            },
+
+            checkValidity(type, val) {
+                var valid = false;
+                if (this.destructuredDisabled.to &&
+                    val <= this.destructuredDisabled.to[type]) {
+                    valid = true;
+                }
+
+                if (this.destructuredDisabled.from &&
+                    val >= this.destructuredDisabled.from[type]) {
+                    valid = true;
+                }
+                return valid;
+            },
+
             formatLabel: function(label) {
                 return this.formatFn(label);
             },
@@ -146,6 +220,24 @@
                 }
                 var date = this.year + '-' + this.month + '-' + this.day + ' 00:00:00';
                 this.$emit('input', date);
+            },
+
+            validate(type, val) {
+                var valid = true;
+                switch (type) {
+                    case 'day':
+                        if (this.checkValidity(type, val) &&
+                           ((this.destructuredDisabled.to &&
+                            this.month === this.destructuredDisabled.to.month) ||
+                            (this.destructuredDisabled.from &&
+                             this.month === this.destructuredDisabled.from.month)) &&
+                           ((this.destructuredDisabled.to && this.year === this.destructuredDisabled.to.year) ||
+                            (this.destructuredDisabled.from && this.year === this.destructuredDisabled.from.year))) {
+                            valid = false;
+                            }
+                        break;
+                }
+                return valid;
             }
         }
     }
