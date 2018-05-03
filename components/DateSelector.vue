@@ -119,27 +119,16 @@
                 }
 
                 var values = [];
-                if (this.disabled) {
-                    // If a year or month is not selected all dates are valid
-                    if (!this.year || !this.month) {
-                        for (var i = 1; i <= days; i++) {
-                            values.push(i);
-                        }
-                        return values;
-                    };
-
-                    for (var i = 1; i <= days; i++) {
+                for (var i = 1; i <= days; i++) {
+                    if (this.disabled) {
                         if (this.validate('day', i)) {
                             values.push(i);
                         } else if (this.day === i) {
                             this.day = null;
                         }
+                    } else {
+                        values.push(i);
                     }
-                    return values;
-                }
-
-                for (var i = 1; i <= days; i++) {
-                    values.push(i);
                 }
                 return values;
             },
@@ -197,29 +186,18 @@
                 ];
 
                 var values = [];
-                if (this.disabled) {
-                    // If the year is not selected all months are valid
-                    if (!this.year) {
-                        for (var i = 0; i < months.length; i++) {
-                            values.push(months[i]);
-                        }
-                        return values;
-                    };
-
-                    for (var i = 0; i < months.length; i++) {
+                for (var i = 0; i < months.length; i++) {
+                    if (this.disabled) {
                         if (this.validate('month', i)) {
                             values.push(months[i]);
                         } else if (this.month === months[i].val) {
                             this.month = null;
                         }
+                    } else {
+                        values.push(months[i]);
                     }
-
-                    return values;
                 }
 
-                for (var i = 0; i < months.length; i++) {
-                    values.push(months[i]);
-                }
                 return values;
             },
 
@@ -227,7 +205,15 @@
                 var years = [];
                 var currentYear = new Date();
                 for (var yyyy = currentYear.getFullYear(); yyyy >= currentYear.getFullYear() - this.amountOfYears; yyyy--) {
-                    years.push(yyyy);
+                    if (this.disabled) {
+                        if (this.validate('year', yyyy)) {
+                            years.push(yyyy);
+                        } else if (this.year === yyyy) {
+                            this.year = null;
+                        }
+                    } else {
+                        years.push(yyyy);
+                    }
                 }
 
                 return years;
@@ -308,6 +294,13 @@
                         if (this.checkValidity(type, val) &&
                            ((this.destructuredDisabled.to && this.year === this.destructuredDisabled.to.year) ||
                             (this.destructuredDisabled.from && this.year === this.destructuredDisabled.from.year))) {
+                            valid = false;
+                        }
+                    case 'year':
+                        if (this.checkValidity(type, val) &&
+                            (this.destructuredDisabled.to && val !== this.destructuredDisabled.to.year) &&
+                            (this.destructuredDisabled.from &&
+                             val !== this.destructuredDisabled.from.year)) {
                             valid = false;
                         }
                 }
