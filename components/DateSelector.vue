@@ -76,7 +76,7 @@
             disabledError: false
         }),
 
-        mounted: function() {
+        mounted() {
             if (this.value) {
                 var converted = this.convertDate(this.value);
                 var { day, month, year } = converted;
@@ -286,11 +286,11 @@
                 return valid;
             },
 
-            formatLabel: function(label) {
+            formatLabel(label) {
                 return this.formatFn(label);
             },
 
-            update: function(e, type) {
+            update(e, type) {
                 switch (type) {
                     case 'd':
                         this.day = Number(e.target.value);
