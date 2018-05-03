@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="date-selector-month">
+        <div class="date-selector-month">
             <select :value="month"
                     @change="update($event, 'm')"
                     id="birthday-m"
@@ -11,7 +11,7 @@
                 <option v-for="m in months" :value="m.val">{{ formatLabel(m.label) }}</option>
             </select>
         </div>
-        <div id="date-selector-day">
+        <div class="date-selector-day">
             <select :value="day"
                     @change="update($event, 'd')"
                     id="birthday-d"
@@ -22,7 +22,7 @@
                 <option v-for="d in days" :value="d">{{ d }}</option>
             </select>
         </div>
-        <div id="date-selector-year">
+        <div class="date-selector-year">
             <select :value="year"
                     @change="update($event, 'y')"
                     id="birthday-y"
@@ -32,6 +32,9 @@
                 <option disabled :value="null" selected>{{ formatLabel('Year') }}</option>
                 <option v-for="year in years" :value="year">{{ year }}</option>
             </select>
+        </div>
+        <div class="date-selector-error" v-if="disabledError">
+            {{ displayError }}
         </div>
     </div>
 </template>
@@ -66,13 +69,12 @@
             }
         },
 
-        data: function() {
-            return {
-                day:    null,
-                month:  null,
-                year:   null
-            }
-        },
+        data: () => ({
+            day:    null,
+            month:  null,
+            year:   null,
+            disabledError: false
+        }),
 
         mounted: function() {
             if (this.value) {
@@ -125,12 +127,38 @@
                             values.push(i);
                         } else if (this.day === i) {
                             this.day = null;
+                            this.disabledError = true;
                         }
                     } else {
                         values.push(i);
                     }
                 }
                 return values;
+            },
+
+            displayError() {
+                var error = '',
+                    toDate,
+                    fromDate;
+                if (this.disabled.to) {
+                     if (!(this.disabled.to instanceof Date)) {
+                        toDate = this.disabled.to;
+                    } else if ((this.disabled.to instanceof Date)) {
+                        toDate = Number(this.disabled.to.getMonth() + 1) + '-' + this.disabled.to.getDate() + '-' + this.disabled.to.getFullYear();
+                    }
+                    error += 'Only dates up to ' + toDate + ' are allowed.';
+                }
+
+                if (this.disabled.from) {
+                    if (!(this.disabled.from instanceof Date)) {
+                        fromDate = this.disabled.from;
+                    } else if ((this.disabled.from instanceof Date)) {
+                        fromDate = Number(this.disabled.from.getMonth() + 1) + '-' + this.disabled.from.getDate() + '-' + this.disabled.from.getFullYear();
+                    }
+                    error += 'Only dates after ' + fromDate + ' are allowed.';
+                }
+
+                return error;
             },
 
             months() {
@@ -192,6 +220,7 @@
                             values.push(months[i]);
                         } else if (this.month === months[i].val) {
                             this.month = null;
+                            this.disabledError = true;
                         }
                     } else {
                         values.push(months[i]);
@@ -210,6 +239,7 @@
                             years.push(yyyy);
                         } else if (this.year === yyyy) {
                             this.year = null;
+                            this.disabledError = true;
                         }
                     } else {
                         years.push(yyyy);
@@ -311,20 +341,29 @@
 </script>
 
 <style lang="scss">
-    #date-selector-year {
-        width: 33.333333%;
-        float: left;
-    }
+    .date-selector {
+        &-year {
+            width: 33.333333%;
+            float: left;
+        }
 
-    #date-selector-month {
-        width:          33.333333%;
-        margin-right:   4%;
-        float:          left;
-    }
+        &-month {
+            width:          33.333333%;
+            margin-right:   4%;
+            float:          left;
+        }
 
-    #date-selector-day {
-        width:          25%;
-        margin-right:   4%;
-        float:          left;
+        &-day {
+            width:          25%;
+            margin-right:   4%;
+            float:          left;
+        }
+
+        &-error {
+            font-size: 10px;
+            color: #bf5329;
+            margin-top: 1px;
+            text-align: center;
+        }
     }
 </style>
