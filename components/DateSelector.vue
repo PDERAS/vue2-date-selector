@@ -8,18 +8,7 @@
                     name="birthday-m"
                     required>
                 <option disabled :value="null" selected>{{ formatLabel('Month') }}</option>
-                <option value="1">{{ formatLabel('Jan') }}</option>
-                <option value="2">{{ formatLabel('Feb') }}</option>
-                <option value="3">{{ formatLabel('Mar') }}</option>
-                <option value="4">{{ formatLabel('Apr') }}</option>
-                <option value="5">{{ formatLabel('May') }}</option>
-                <option value="6">{{ formatLabel('Jun') }}</option>
-                <option value="7">{{ formatLabel('Jul') }}</option>
-                <option value="8">{{ formatLabel('Aug') }}</option>
-                <option value="9">{{ formatLabel('Sep') }}</option>
-                <option value="10">{{ formatLabel('Oct') }}</option>
-                <option value="11">{{ formatLabel('Nov') }}</option>
-                <option value="12">{{ formatLabel('Dec') }}</option>
+                <option v-for="m in months" :value="m.val">{{ formatLabel(m.label) }}</option>
             </select>
         </div>
         <div id="date-selector-day">
@@ -108,7 +97,7 @@
                 return disabled;
             },
 
-            days: function() {
+            days() {
                 var thirtyOneDayMonths = [1, 3, 5, 7, 8, 10, 12],
                     thirtyDayMonths = [4, 6, 9, 11],
                     days = 0;
@@ -155,7 +144,86 @@
                 return values;
             },
 
-            years: function() {
+            months() {
+                var months = [
+                    {
+                        val: 1,
+                        label: 'Jan'
+                    },
+                    {
+                        val: 2,
+                        label: 'Feb'
+                    },
+                    {
+                        val: 3,
+                        label: 'Mar'
+                    },
+                    {
+                        val: 4,
+                        label: 'Apr'
+                    },
+                    {
+                        val: 5,
+                        label: 'May'
+                    },
+                    {
+                        val: 6,
+                        label: 'Jun'
+                    },
+                    {
+                        val: 7,
+                        label: 'Jul'
+                    },
+                    {
+                        val: 8,
+                        label: 'Aug'
+                    },
+                    {
+                        val: 9,
+                        label: 'Sep'
+                    },
+                    {
+                        val: 10,
+                        label: 'Oct'
+                    },
+                    {
+                        val: 11,
+                        label: 'Nov'
+                    },
+                    {
+                        val: 12,
+                        label: 'Dec'
+                    }
+                ];
+
+                var values = [];
+                if (this.disabled) {
+                    // If the year is not selected all months are valid
+                    if (!this.year) {
+                        for (var i = 0; i < months.length; i++) {
+                            values.push(months[i]);
+                        }
+                        return values;
+                    };
+
+                    for (var i = 0; i < months.length; i++) {
+                        if (this.validate('month', i)) {
+                            values.push(months[i]);
+                        } else if (this.month === months[i].val) {
+                            this.month = null;
+                        }
+                    }
+
+                    return values;
+                }
+
+                for (var i = 0; i < months.length; i++) {
+                    values.push(months[i]);
+                }
+                return values;
+            },
+
+            years() {
                 var years = [];
                 var currentYear = new Date();
                 for (var yyyy = currentYear.getFullYear(); yyyy >= currentYear.getFullYear() - this.amountOfYears; yyyy--) {
@@ -236,6 +304,12 @@
                             valid = false;
                             }
                         break;
+                    case 'month':
+                        if (this.checkValidity(type, val) &&
+                           ((this.destructuredDisabled.to && this.year === this.destructuredDisabled.to.year) ||
+                            (this.destructuredDisabled.from && this.year === this.destructuredDisabled.from.year))) {
+                            valid = false;
+                        }
                 }
                 return valid;
             }
