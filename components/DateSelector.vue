@@ -53,7 +53,7 @@
             },
 
             disabled: {
-                type: Object
+                type: Object,
                 default: null
             },
 
