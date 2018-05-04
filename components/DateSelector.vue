@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="date-selector-month">
+        <div class="date-selector-month">
             <select :value="month"
                     @change="update($event, 'm')"
                     id="birthday-m"
@@ -8,21 +8,10 @@
                     name="birthday-m"
                     required>
                 <option disabled :value="null" selected>{{ formatLabel('Month') }}</option>
-                <option value="1">{{ formatLabel('Jan') }}</option>
-                <option value="2">{{ formatLabel('Feb') }}</option>
-                <option value="3">{{ formatLabel('Mar') }}</option>
-                <option value="4">{{ formatLabel('Apr') }}</option>
-                <option value="5">{{ formatLabel('May') }}</option>
-                <option value="6">{{ formatLabel('Jun') }}</option>
-                <option value="7">{{ formatLabel('Jul') }}</option>
-                <option value="8">{{ formatLabel('Aug') }}</option>
-                <option value="9">{{ formatLabel('Sep') }}</option>
-                <option value="10">{{ formatLabel('Oct') }}</option>
-                <option value="11">{{ formatLabel('Nov') }}</option>
-                <option value="12">{{ formatLabel('Dec') }}</option>
+                <option v-for="m in months" :value="m.val">{{ formatLabel(m.label) }}</option>
             </select>
         </div>
-        <div id="date-selector-day">
+        <div class="date-selector-day">
             <select :value="day"
                     @change="update($event, 'd')"
                     id="birthday-d"
@@ -33,7 +22,7 @@
                 <option v-for="d in days" :value="d">{{ d }}</option>
             </select>
         </div>
-        <div id="date-selector-year">
+        <div class="date-selector-year">
             <select :value="year"
                     @change="update($event, 'y')"
                     id="birthday-y"
@@ -43,6 +32,9 @@
                 <option disabled :value="null" selected>{{ formatLabel('Year') }}</option>
                 <option v-for="year in years" :value="year">{{ year }}</option>
             </select>
+        </div>
+        <div class="date-selector-error" v-if="disabledError">
+            {{ displayError }}
         </div>
     </div>
 </template>
@@ -60,6 +52,11 @@
                 }
             },
 
+            disabled: {
+                type: Object
+                default: null
+            },
+
             formatFn: {
                 type: Function,
                 default: (val) =>  { return val; }
@@ -73,54 +70,181 @@
             }
         },
 
-        data: function() {
-            return {
-                day:    null,
-                month:  null,
-                year:   null
-            }
-        },
+        data: () => ({
+            day:    null,
+            month:  null,
+            year:   null,
+            disabledError: false
+        }),
 
-        mounted: function() {
-            if (this.value && !(this.value instanceof Date)) {
-                var date = this.value.split(' ')[0];
-                this.day = Number(date.split('-')[2]);
-                this.month = Number(date.split('-')[1]);
-                this.year = Number(date.split('-')[0]);
-            } else if (this.value && (this.value instanceof Date)) {
-                this.day = Number(this.value.getDate());
-                this.month = Number(this.value.getMonth() + 1);
-                this.year = Number(this.value.getFullYear());
+        mounted() {
+            if (this.value) {
+                var converted = this.convertDate(this.value);
+                var { day, month, year } = converted;
+                this.day = day;
+                this.month = month;
+                this.year = year;
             }
         },
 
         computed: {
-            days: function() {
-                var thirtyOneDayMonths = [1, 3, 5, 7, 8, 10, 12];
-                var thirtyDayMonths = [4, 6, 9, 11];
+            destructuredDisabled() {
+                var disabled = {};
+                if (this.disabled.to) {
+                    disabled.to = this.convertDate(this.disabled.to);
+                }
+
+                if (this.disabled.from) {
+                    disabled.from = this.convertDate(this.disabled.from);
+                }
+                return disabled;
+            },
+
+            days() {
+                var thirtyOneDayMonths = [1, 3, 5, 7, 8, 10, 12],
+                    thirtyDayMonths = [4, 6, 9, 11],
+                    days = 0;
 
                 if (this.month) {
                     if (thirtyOneDayMonths.indexOf(this.month) > -1) {
-                        return 31;
+                        days = 31;
                     } else if (thirtyDayMonths.indexOf(this.month) > -1) {
-                        return 30;
+                        days = 30;
                     } else {
                         if (this.year && (this.year % 4 == 0)) {
-                            return 29;
+                            days = 29;
                         } else {
-                            return 28;
+                            days = 28;
                         }
                     }
                 } else {
-                    return 31;
+                    days = 31;
                 }
+
+                var values = [];
+                for (var i = 1; i <= days; i++) {
+                    if (this.disabled) {
+                        if (this.validate('day', i)) {
+                            values.push(i);
+                        } else if (this.day === i) {
+                            this.day = null;
+                            this.disabledError = true;
+                        }
+                    } else {
+                        values.push(i);
+                    }
+                }
+                return values;
             },
 
-            years: function() {
+            displayError() {
+                var error = '',
+                    toDate,
+                    fromDate;
+                if (this.disabled.to) {
+                     if (!(this.disabled.to instanceof Date)) {
+                        toDate = this.disabled.to;
+                    } else if ((this.disabled.to instanceof Date)) {
+                        toDate = Number(this.disabled.to.getMonth() + 1) + '-' + this.disabled.to.getDate() + '-' + this.disabled.to.getFullYear();
+                    }
+                    error += 'Only dates up to ' + toDate + ' are allowed.';
+                }
+
+                if (this.disabled.from) {
+                    if (!(this.disabled.from instanceof Date)) {
+                        fromDate = this.disabled.from;
+                    } else if ((this.disabled.from instanceof Date)) {
+                        fromDate = Number(this.disabled.from.getMonth() + 1) + '-' + this.disabled.from.getDate() + '-' + this.disabled.from.getFullYear();
+                    }
+                    error += 'Only dates after ' + fromDate + ' are allowed.';
+                }
+
+                return error;
+            },
+
+            months() {
+                var months = [
+                    {
+                        val: 1,
+                        label: 'Jan'
+                    },
+                    {
+                        val: 2,
+                        label: 'Feb'
+                    },
+                    {
+                        val: 3,
+                        label: 'Mar'
+                    },
+                    {
+                        val: 4,
+                        label: 'Apr'
+                    },
+                    {
+                        val: 5,
+                        label: 'May'
+                    },
+                    {
+                        val: 6,
+                        label: 'Jun'
+                    },
+                    {
+                        val: 7,
+                        label: 'Jul'
+                    },
+                    {
+                        val: 8,
+                        label: 'Aug'
+                    },
+                    {
+                        val: 9,
+                        label: 'Sep'
+                    },
+                    {
+                        val: 10,
+                        label: 'Oct'
+                    },
+                    {
+                        val: 11,
+                        label: 'Nov'
+                    },
+                    {
+                        val: 12,
+                        label: 'Dec'
+                    }
+                ];
+
+                var values = [];
+                for (var i = 0; i < months.length; i++) {
+                    if (this.disabled) {
+                        if (this.validate('month', i)) {
+                            values.push(months[i]);
+                        } else if (this.month === months[i].val) {
+                            this.month = null;
+                            this.disabledError = true;
+                        }
+                    } else {
+                        values.push(months[i]);
+                    }
+                }
+
+                return values;
+            },
+
+            years() {
                 var years = [];
                 var currentYear = new Date();
                 for (var yyyy = currentYear.getFullYear(); yyyy >= currentYear.getFullYear() - this.amountOfYears; yyyy--) {
-                    years.push(yyyy);
+                    if (this.disabled) {
+                        if (this.validate('year', yyyy)) {
+                            years.push(yyyy);
+                        } else if (this.year === yyyy) {
+                            this.year = null;
+                            this.disabledError = true;
+                        }
+                    } else {
+                        years.push(yyyy);
+                    }
                 }
 
                 return years;
@@ -128,11 +252,46 @@
         },
 
         methods: {
-            formatLabel: function(label) {
+            convertDate(date) {
+                var converted = {
+                    day: null,
+                    month: null,
+                    year: null
+                };
+
+                if (!(date instanceof Date)) {
+                    var temp = date.split(' ')[0];
+                    converted.day = Number(temp.split('-')[2]);
+                    converted.month = Number(temp.split('-')[1]);
+                    converted.year = Number(temp.split('-')[0]);
+                } else if ((date instanceof Date)) {
+                    converted.day = Number(date.getDate());
+                    converted.month = Number(date.getMonth() + 1);
+                    converted.year = Number(date.getFullYear());
+                }
+
+                return converted;
+            },
+
+            checkValidity(type, val) {
+                var valid = false;
+                if (this.destructuredDisabled.to &&
+                    val <= this.destructuredDisabled.to[type]) {
+                    valid = true;
+                }
+
+                if (this.destructuredDisabled.from &&
+                    val >= this.destructuredDisabled.from[type]) {
+                    valid = true;
+                }
+                return valid;
+            },
+
+            formatLabel(label) {
                 return this.formatFn(label);
             },
 
-            update: function(e, type) {
+            update(e, type) {
                 switch (type) {
                     case 'd':
                         this.day = Number(e.target.value);
@@ -146,26 +305,66 @@
                 }
                 var date = this.year + '-' + this.month + '-' + this.day + ' 00:00:00';
                 this.$emit('input', date);
+            },
+
+            validate(type, val) {
+                var valid = true;
+                switch (type) {
+                    case 'day':
+                        if (this.checkValidity(type, val) &&
+                           ((this.destructuredDisabled.to &&
+                            this.month === this.destructuredDisabled.to.month) ||
+                            (this.destructuredDisabled.from &&
+                             this.month === this.destructuredDisabled.from.month)) &&
+                           ((this.destructuredDisabled.to && this.year === this.destructuredDisabled.to.year) ||
+                            (this.destructuredDisabled.from && this.year === this.destructuredDisabled.from.year))) {
+                            valid = false;
+                            }
+                        break;
+                    case 'month':
+                        if (this.checkValidity(type, val) &&
+                           ((this.destructuredDisabled.to && this.year === this.destructuredDisabled.to.year) ||
+                            (this.destructuredDisabled.from && this.year === this.destructuredDisabled.from.year))) {
+                            valid = false;
+                        }
+                    case 'year':
+                        if (this.checkValidity(type, val) &&
+                            (this.destructuredDisabled.to && val !== this.destructuredDisabled.to.year) &&
+                            (this.destructuredDisabled.from &&
+                             val !== this.destructuredDisabled.from.year)) {
+                            valid = false;
+                        }
+                }
+                return valid;
             }
         }
     }
 </script>
 
 <style lang="scss">
-    #date-selector-year {
-        width: 33.333333%;
-        float: left;
-    }
+    .date-selector {
+        &-year {
+            width: 33.333333%;
+            float: left;
+        }
 
-    #date-selector-month {
-        width:          33.333333%;
-        margin-right:   4%;
-        float:          left;
-    }
+        &-month {
+            width:          33.333333%;
+            margin-right:   4%;
+            float:          left;
+        }
 
-    #date-selector-day {
-        width:          25%;
-        margin-right:   4%;
-        float:          left;
+        &-day {
+            width:          25%;
+            margin-right:   4%;
+            float:          left;
+        }
+
+        &-error {
+            font-size: 10px;
+            color: #bf5329;
+            margin-top: 1px;
+            text-align: center;
+        }
     }
 </style>
