@@ -54,6 +54,7 @@
 
             disabled: {
                 type: Object
+                default: null
             },
 
             formatFn: {
