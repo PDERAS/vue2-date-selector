@@ -12,7 +12,7 @@ Vue.use(DateSelector);
 ## Usage
 
 #### Creation
-Vue moola is easily created, and has many properties that can be changed.
+Vue date selector is easily created, and has many properties that can be changed.
 
 ```HTML
 <date-selector></date-selector>
@@ -24,7 +24,8 @@ Vue moola is easily created, and has many properties that can be changed.
 | value         | false    | String&#124;Date | Date()                     | Value for the input, can be used with v-model                           |
 | formatFn      | false    | Function         | (value) => {return value } | Formats the labels based on the function provided                       |
 | amountOfYears | false    | Number           | 20                         | The amount of years to show in the date selector, from the current year |
-| disabled      | false    | Object           | null                       | Specifies dates to disable from being selected in the picker |
+| disabled      | false    | Object           | null                       | Specifies dates to disable from being selected in the picker            |
+| disabledInput | false    | Boolean          | false                      | Disables the inputs on the date selector                                |
 
 ### Disabled Dates
 The disabled object contains two potential keys for disabling ranges of dates.
