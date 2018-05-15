@@ -1,35 +1,38 @@
 <template>
     <div>
         <div class="date-selector-month">
-            <select :value="month"
-                    @change="update($event, 'm')"
+            <select class="form-control"
                     id="birthday-m"
-                    class="form-control"
                     name="birthday-m"
+                    :disabled="disabledInput"
+                    :value="month"
+                    @change="update($event, 'm')"
                     required>
-                <option disabled :value="null" selected>{{ formatLabel('Month') }}</option>
+                <option :value="null" disabled selected>{{ formatLabel('Month') }}</option>
                 <option v-for="m in months" :value="m.val">{{ formatLabel(m.label) }}</option>
             </select>
         </div>
         <div class="date-selector-day">
-            <select :value="day"
-                    @change="update($event, 'd')"
+            <select class="form-control"
                     id="birthday-d"
-                    class="form-control"
                     name="birthday-d"
+                    :disabled="disabledInput"
+                    :value="day"
+                    @change="update($event, 'd')"
                     required>
-                <option disabled :value="null" selected>{{ formatLabel('Day') }}</option>
+                <option :value="null" disabled selected>{{ formatLabel('Day') }}</option>
                 <option v-for="d in days" :value="d">{{ d }}</option>
             </select>
         </div>
         <div class="date-selector-year">
-            <select :value="year"
-                    @change="update($event, 'y')"
+            <select class="form-control"
                     id="birthday-y"
-                    class="form-control"
                     name="birthday-y"
+                    :disabled="disabledInput"
+                    :value="year"
+                    @change="update($event, 'y')"
                     required>
-                <option disabled :value="null" selected>{{ formatLabel('Year') }}</option>
+                <option :value="null" disabled selected>{{ formatLabel('Year') }}</option>
                 <option v-for="year in years" :value="year">{{ year }}</option>
             </select>
         </div>
@@ -55,6 +58,11 @@
             disabled: {
                 type: Object,
                 default: null
+            },
+
+            disabledInput: {
+                type: Boolean,
+                default: false
             },
 
             formatFn: {
