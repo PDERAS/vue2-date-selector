@@ -155,7 +155,7 @@
                     } else if ((this.disabled.to instanceof Date)) {
                         toDate = Number(this.disabled.to.getMonth() + 1) + '-' + this.disabled.to.getDate() + '-' + this.disabled.to.getFullYear();
                     }
-                    error += 'Only dates up to ' + toDate + ' are allowed.';
+                    error += 'Only dates after ' + toDate + ' are allowed.';
                 }
 
                 if (this.disabled.from) {
@@ -164,7 +164,7 @@
                     } else if ((this.disabled.from instanceof Date)) {
                         fromDate = Number(this.disabled.from.getMonth() + 1) + '-' + this.disabled.from.getDate() + '-' + this.disabled.from.getFullYear();
                     }
-                    error += 'Only dates after ' + fromDate + ' are allowed.';
+                    error += 'Only dates before ' + fromDate + ' are allowed.';
                 }
 
                 return error;
@@ -338,12 +338,7 @@
                         }
                         break;
                     case 'year':
-                        if (this.checkValidity(type, val) &&
-                            (this.destructuredDisabled.to && val !== this.destructuredDisabled.to.year) &&
-                            (this.destructuredDisabled.from &&
-                             val !== this.destructuredDisabled.from.year)) {
-                            valid = false;
-                        }
+                        valid  = !this.checkValidity(type, val)
                         break;
                 }
                 return valid;
