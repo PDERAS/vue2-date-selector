@@ -225,7 +225,7 @@
                 var values = [];
                 for (var i = 0; i < months.length; i++) {
                     if (this.disabled) {
-                        if (this.validate('month', i)) {
+                        if (this.validate('month', months[i].val)) {
                             values.push(months[i]);
                         } else if (this.month === months[i].val) {
                             this.month = null;
@@ -284,12 +284,12 @@
             checkValidity(type, val) {
                 var valid = false;
                 if (this.destructuredDisabled.to &&
-                    val <= this.destructuredDisabled.to[type]) {
+                    val < this.destructuredDisabled.to[type]) {
                     valid = true;
                 }
 
                 if (this.destructuredDisabled.from &&
-                    val >= this.destructuredDisabled.from[type]) {
+                    val > this.destructuredDisabled.from[type]) {
                     valid = true;
                 }
                 return valid;
@@ -312,6 +312,7 @@
                         break;
                 }
                 var date = this.year + '-' + this.month + '-' + this.day + ' 00:00:00';
+                this.disabledError = false;
                 this.$emit('input', date);
             },
 
@@ -335,6 +336,7 @@
                             (this.destructuredDisabled.from && this.year === this.destructuredDisabled.from.year))) {
                             valid = false;
                         }
+                        break;
                     case 'year':
                         if (this.checkValidity(type, val) &&
                             (this.destructuredDisabled.to && val !== this.destructuredDisabled.to.year) &&
@@ -342,6 +344,7 @@
                              val !== this.destructuredDisabled.from.year)) {
                             valid = false;
                         }
+                        break;
                 }
                 return valid;
             }
