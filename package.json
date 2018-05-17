@@ -1,6 +1,6 @@
 {
   "name": "@pderas/vue2-date-selector",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A vue 2 component for selecting a date as 3 input boxes",
   "main": "index.js",
   "scripts": {
