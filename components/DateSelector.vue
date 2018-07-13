@@ -47,11 +47,19 @@
         name: 'date-selector',
 
         props: {
+            amountOfYearsAfter: {
+                type:       [ String, Number ],
+                default:    0,
+                validator:  function(val) {
+                    return !isNaN(val);
+                }
+            },
+
             amountOfYears: {
                 type:       [ String, Number ],
                 default:    20,
                 validator:  function(val) {
-                    return Number(val);
+                    return !isNaN(val);
                 }
             },
 
@@ -241,8 +249,23 @@
 
             years() {
                 var years = [];
-                var currentYear = new Date();
-                for (var yyyy = currentYear.getFullYear(); yyyy >= currentYear.getFullYear() - this.amountOfYears; yyyy--) {
+                var currentYear = new Date().getFullYear();
+                if (this.amountOfYearsAfter > 0) {
+                    for (var yyyy = currentYear + Number(this.amountOfYearsAfter); yyyy > currentYear; yyyy--) {
+                        if (this.disabled) {
+                            if (this.validate('year', yyyy)) {
+                                years.push(yyyy);
+                            } else if (this.year === yyyy) {
+                                this.year = null;
+                                this.disabledError = true;
+                            }
+                        } else {
+                            years.push(yyyy);
+                        }
+                    }
+                }
+
+                for (var yyyy = currentYear; yyyy >= currentYear - this.amountOfYears; yyyy--) {
                     if (this.disabled) {
                         if (this.validate('year', yyyy)) {
                             years.push(yyyy);
