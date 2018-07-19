@@ -24,6 +24,7 @@ Vue date selector is easily created, and has many properties that can be changed
 | value         | false    | String&#124;Date | Date()                     | Value for the input, can be used with v-model                           |
 | formatFn      | false    | Function         | (value) => {return value } | Formats the labels based on the function provided                       |
 | amountOfYears | false    | Number           | 20                         | The amount of years to show in the date selector, from the current year |
+| amountOfYearsAfter | false    | Number           | 0                         | The amount of years to show in the date selector, from after the current year |
 | disabled      | false    | Object           | null                       | Specifies dates to disable from being selected in the picker            |
 | disabledInput | false    | Boolean          | false                      | Disables the inputs on the date selector                                |
 
