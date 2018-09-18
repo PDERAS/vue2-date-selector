@@ -39,17 +39,14 @@
         <div class="date-selector-error" v-if="disabledError">
             {{ displayError }}
         </div>
-        <calendar-picker v-if='month && year' :month='month' :months='months' :year='year' :daysInMonth='days.length'/>
     </div>
 </template>
 
 <script>
-import CalendarPicker from './CalendarPicker'
+    import { DateMixins } from '../mixins/mixins'
     export default {
+        mixins: [DateMixins],
         name: 'date-selector',
-        components: {
-            CalendarPicker
-        },
 
         props: {
             amountOfYearsAfter: {
@@ -175,68 +172,17 @@ import CalendarPicker from './CalendarPicker'
             },
 
             months() {
-                var months = [
-                    {
-                        val: 1,
-                        label: 'Jan'
-                    },
-                    {
-                        val: 2,
-                        label: 'Feb'
-                    },
-                    {
-                        val: 3,
-                        label: 'Mar'
-                    },
-                    {
-                        val: 4,
-                        label: 'Apr'
-                    },
-                    {
-                        val: 5,
-                        label: 'May'
-                    },
-                    {
-                        val: 6,
-                        label: 'Jun'
-                    },
-                    {
-                        val: 7,
-                        label: 'Jul'
-                    },
-                    {
-                        val: 8,
-                        label: 'Aug'
-                    },
-                    {
-                        val: 9,
-                        label: 'Sep'
-                    },
-                    {
-                        val: 10,
-                        label: 'Oct'
-                    },
-                    {
-                        val: 11,
-                        label: 'Nov'
-                    },
-                    {
-                        val: 12,
-                        label: 'Dec'
-                    }
-                ];
-
                 var values = [];
-                for (var i = 0; i < months.length; i++) {
+                for (var i = 0; i < this._allMonths.length; i++) {
                     if (this.disabled) {
-                        if (this.validate('month', months[i].val)) {
+                        if (this.validate('month', this._allMonths[i].val)) {
                             values.push(months[i]);
-                        } else if (this.month === months[i].val) {
+                        } else if (this.month === this._allMonths[i].val) {
                             this.month = null;
                             this.disabledError = true;
                         }
                     } else {
-                        values.push(months[i]);
+                        values.push(this._allMonths[i]);
                     }
                 }
 
