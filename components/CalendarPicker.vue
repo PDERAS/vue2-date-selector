@@ -1,25 +1,43 @@
 <template>
     <div class='cal'>
         <div class="cal-title">
-            <span @click='prevMonth'>{{ prev }}</span>
-            <h1>{{ activeYear }} - {{ _allMonths.find(m => m.val === activeMonth).label }}</h1>
-            <span @click='nextMonth'>{{ next }}</span>
+            <span @click='prevMonth'>
+                {{ prev }}
+            </span>
+            <h1>
+                {{ activeYear }} - {{ _allMonths.find(m => m.val === activeMonth).label }}
+            </h1>
+            <span @click='nextMonth'>
+                {{ next }}
+            </span>
         </div>
         <div class="cal-data">
-            <div class='cal-day cal-day-inactive' v-for='day in weekdays' :key='day'>{{ day }}</div>
-            <div class='cal-day cal-day-inactive' v-for='i in startDay' :key='`${i}-blank-start`' />
+            <div class='cal-day cal-day-header'
+                v-for='day in weekdays'
+                :key='day'>
+                {{ day }}
+            </div>
 
-            <div
-                class='cal-day'
+            <div class='cal-day cal-day-inactive'
+                v-for='i in startDay'
+                :key='`${i}-blank-start`'/>
+
+            <div class='cal-day'
                 v-for='i in daysInMonth'
                 :key='i'
                 :class='generatedClass(i)'
                 @click='handleTracking(i)'>
-                <div v-if='hasToolTip(i)' class='cal-day-tooltip'>{{ getToolTip(i) }}</div>
+
+                <div v-if='hasToolTip(i)'
+                    class='cal-day-tooltip'>
+                    {{ getToolTip(i) }}
+                </div>
                 {{ i }}
             </div>
 
-            <div class='cal-day cal-day-inactive' v-for='i in endDay' :key='`${i}-blank-end`' />
+            <div class='cal-day cal-day-inactive'
+                v-for='i in endDay'
+                :key='`${i}-blank-end`' />
         </div>
     </div>
 </template>
