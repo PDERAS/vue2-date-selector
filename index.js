@@ -1,4 +1,4 @@
-import DateSelector from './components/DateSelector.vue'
+import DateSelector from './components/DateSelector'
 
 function install(Vue, options) {
     Vue.component('date-selector', DateSelector);

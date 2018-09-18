@@ -9,7 +9,7 @@
                     @change="update($event, 'm')"
                     required>
                 <option :value="null" disabled selected>{{ formatLabel('Month') }}</option>
-                <option v-for="m in months" :value="m.val">{{ formatLabel(m.label) }}</option>
+                <option v-for="m in months" :value="m.val" :key="m.val">{{ formatLabel(m.label) }}</option>
             </select>
         </div>
         <div class="date-selector-day">
@@ -21,7 +21,7 @@
                     @change="update($event, 'd')"
                     required>
                 <option :value="null" disabled selected>{{ formatLabel('Day') }}</option>
-                <option v-for="d in days" :value="d">{{ d }}</option>
+                <option v-for="day in days" :value="day" :key="day">{{ day }}</option>
             </select>
         </div>
         <div class="date-selector-year">
@@ -33,34 +33,35 @@
                     @change="update($event, 'y')"
                     required>
                 <option :value="null" disabled selected>{{ formatLabel('Year') }}</option>
-                <option v-for="year in years" :value="year">{{ year }}</option>
+                <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
             </select>
         </div>
         <div class="date-selector-error" v-if="disabledError">
             {{ displayError }}
         </div>
+        <calendar-picker v-if='month && year' :month='month' :months='months' :year='year' :daysInMonth='days.length'/>
     </div>
 </template>
 
 <script>
+import CalendarPicker from './CalendarPicker'
     export default {
         name: 'date-selector',
+        components: {
+            CalendarPicker
+        },
 
         props: {
             amountOfYearsAfter: {
-                type:       [ String, Number ],
-                default:    0,
-                validator:  function(val) {
-                    return !isNaN(val);
-                }
+                type: String|Number,
+                default: 0,
+                validator: val => !isNaN(val)
             },
 
             amountOfYears: {
-                type:       [ String, Number ],
-                default:    20,
-                validator:  function(val) {
-                    return !isNaN(val);
-                }
+                type: String|Number,
+                default: 20,
+                validator: val => !isNaN(val)
             },
 
             disabled: {
@@ -75,14 +76,12 @@
 
             formatFn: {
                 type: Function,
-                default: (val) =>  { return val; }
+                default: val => val
             },
 
             value: {
-                default:    function() { new Date() },
-                validator:  function(val) {
-                    return String(val) || val instanceof Date;
-                }
+                default: () => new Date(),
+                validator: val => String(val) || val instanceof Date
             }
         },
 
@@ -119,22 +118,18 @@
             days() {
                 var thirtyOneDayMonths = [1, 3, 5, 7, 8, 10, 12],
                     thirtyDayMonths = [4, 6, 9, 11],
-                    days = 0;
+                    days = 31;
 
                 if (this.month) {
-                    if (thirtyOneDayMonths.indexOf(this.month) > -1) {
+                    if (thirtyOneDayMonths.includes(this.month)) {
                         days = 31;
-                    } else if (thirtyDayMonths.indexOf(this.month) > -1) {
+                    } else if (thirtyDayMonths.includes(this.month)) {
                         days = 30;
+                    } else if (this.year && (this.year % 4 == 0)) {
+                        days = 29;
                     } else {
-                        if (this.year && (this.year % 4 == 0)) {
-                            days = 29;
-                        } else {
-                            days = 28;
-                        }
+                        days = 28;
                     }
-                } else {
-                    days = 31;
                 }
 
                 var values = [];
@@ -150,6 +145,7 @@
                         values.push(i);
                     }
                 }
+
                 return values;
             },
 
