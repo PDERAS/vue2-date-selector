@@ -1,13 +1,13 @@
 <template>
     <div class='cal'>
         <div class="cal-title">
-            <span @click='prevMonth'>
+            <span @click='prevMonth' class='cal-btn-prev'>
                 {{ prev }}
             </span>
             <h1>
                 {{ activeYear }} - {{ _allMonths.find(m => m.val === activeMonth).label }}
             </h1>
-            <span @click='nextMonth'>
+            <span @click='nextMonth' class='cal-btn-next'>
                 {{ next }}
             </span>
         </div>
