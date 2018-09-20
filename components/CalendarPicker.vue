@@ -73,7 +73,7 @@ export default {
         },
         highlighted: {
             type: Object,
-            default: {}
+            default: _ => new Object
         }
     },
     data: () => ({
@@ -112,6 +112,12 @@ export default {
         if (!this.year) {
             this.$emit('update:year', this.activeYear);
         }
+        if (this.value.start) {
+            this.startDate = this.value.start
+        }
+        if (this.value.end) {
+            this.endDate = this.value.end
+        }
     },
     methods: {
         generatedClass(day) {
@@ -120,7 +126,7 @@ export default {
             if (this.startDate && compareDate.getTime() === this.startDate.getTime()) {
                 classes.push('cal-day-clicked')
             } else if (this.endDate && compareDate.getTime() === this.endDate.getTime()) {
-                 classes.push('cal-day-clicked')
+                classes.push('cal-day-clicked')
             } else if (
                 this.startDate &&
                 this.endDate &&
@@ -183,7 +189,7 @@ export default {
             return Object.keys(this.highlighted).includes(this.formattedString(day))
         },
         getToolTip(day) {
-            const t = this.highlighted[this.formattedString(day)]
+            const t = this.highlighted && this.highlighted[this.formattedString(day)]
             return t && t.name || ''
         },
         formattedString(day) {
@@ -211,3 +217,97 @@ export default {
 };
 </script>
 
+<style lang="scss">
+$blue: #00f;
+$red: #f00;
+$grey: #eee;
+$white: #fff;
+
+.cal {
+    margin: 0 auto;
+    &-wrapper {
+        display: flex;
+    }
+    &-data {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: stretch;
+        justify-content: flex-start;
+        box-sizing: content-box;
+        margin: 0 auto;
+        border: {
+            bottom: 1px solid;
+            left: 1px solid;
+        }
+    }
+    &-title {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+    &-day {
+        position: relative;
+        flex: 1 1 14%;
+        min-width: 14%;
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        justify-content: center;
+        border: {
+            top: 1px solid;
+            right: 1px solid;
+        }
+        &:not(#{&}-inactive):not(#{&}-header) {
+            cursor: pointer;
+        }
+        &-header,
+        &-inactive {
+            background: $grey;
+        }
+        &-today {
+            background: rgba($blue, 0.5);
+            box-shadow: 0px 0px 5px inset $blue;
+        }
+        &-highlighted {
+            background: rgba($red, 0.15);
+            box-shadow: 0px 0px 5px inset $red;
+        }
+        &-clicked {
+            background: rgba($blue, 0.5);
+        }
+        &-faded {
+            background: rgba($blue, 0.05);
+        }
+        &-tooltip {
+            position: absolute;
+            top: -2rem;
+            background: $white;
+            padding: 0.25rem 0.5rem;
+            border: 1px solid;
+            z-index: 1;
+            opacity: 0;
+            white-space: nowrap;
+            pointer-events: none;
+            &:after {
+                content: '';
+                position: absolute;
+                width: 15px;
+                height: 15px;
+                border-bottom: 1px solid;
+                border-left: 1px solid;
+                transform: rotate(-45deg);
+                background: $white;
+                bottom: -0.5rem;
+                left: 0;
+                right: 0;
+                margin: 0 auto;
+            }
+        }
+        &:hover &-tooltip {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    }
+}
+</style>
