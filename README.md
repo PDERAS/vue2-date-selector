@@ -12,7 +12,7 @@ Vue.use(DateSelector);
 ```
 ## Usage
 
-#### Creation
+#### `<date-selector />` Creation
 Vue date selector is easily created, and has many properties that can be changed.
 
 ```HTML
@@ -41,8 +41,14 @@ Currently only `to` or `from` can be used separately. They cannot be used togeth
 #### Styling
 Styling is currently limited, but can be expanded in the future.
 
+#### `<calendar-picker />` Creation
+Vue calendar picker is easily created, and has many properties that can be changed.
 
-## `<calendar-picker />` Properties
+```HTML
+<calendar-picker v-model='dates' />
+```
+
+### `<calendar-picker />` Properties
 | Property | Required | Type | Default | Description |
 |--|--|--|--|--|
 | value | true | Object | -- | passed in the form of either `{ day: null }` for single date picking, or `{ start: null, end: null }` for multi day picking |
@@ -63,8 +69,19 @@ Styling is currently limited, but can be expanded in the future.
 }
 ```
 
+### Misc
+Instead of providing a `value` prop, `v-model` can be used to make use of two way data binding. Similarly, the `month` and `year` props can be bound using the `.sync` modifier.
+```html
+<!-- sync example -->
+<calendar-picker
+    v-model='selectedDates'
+    :month.sync='month'
+    :year.sync='year' />
+```
+
+
 ### Styling
-all elements are namespaced starting with `.cal` and are written at the root level for the easiest customization. The calendar will grow/shrink width in relation to the surround div, and the squares height can be easily overwritten using `.cal-day { height: 50px; }`. The most common styles to be overridden are likely to be the background colors of: `.cal-header, .cal-inactive, .cal-today, .cal-highlighted, .cal-clicked, .cal-faded`.
+All elements are namespaced starting with `.cal` and are written at the root level for the easiest customization. The calendar will grow/shrink width in relation to the surrounding div, and the squares height can be easily overwritten using `.cal-day { height: 50px; }`. The most common styles to be overridden are likely to be the background colors of: `.cal-header, .cal-inactive, .cal-today, .cal-highlighted, .cal-clicked, .cal-faded`.
 
 ![calendar-picker component](https://raw.githubusercontent.com/reed-jones/vue2-date-selector/calendar-picker/assets/calendar-picker.png)
 

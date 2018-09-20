@@ -133,7 +133,7 @@ export default {
                 compareDate.getTime() > this.startDate.getTime() &&
                 compareDate.getTime() < this.endDate.getTime()
             ) {
-                 classes.push('cal-day-faded')
+                classes.push('cal-day-faded')
             }
 
             if (this.hasToolTip(day)) {
