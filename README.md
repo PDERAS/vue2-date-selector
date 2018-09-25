@@ -83,7 +83,7 @@ Instead of providing a `value` prop, `v-model` can be used to make use of two wa
 ### Styling
 All elements are namespaced starting with `.cal` and are written at the root level for the easiest customization. The calendar will grow/shrink width in relation to the surrounding div, and the squares height can be easily overwritten using `.cal-day { height: 50px; }`. The most common styles to be overridden are likely to be the background colors of: `.cal-header, .cal-inactive, .cal-today, .cal-highlighted, .cal-clicked, .cal-faded`.
 
-![calendar-picker component](https://raw.githubusercontent.com/reed-jones/vue2-date-selector/calendar-picker/assets/calendar-picker.png)
+![calendar-picker component](https://raw.githubusercontent.com/PDERAS/vue2-date-selector/calendar-picker/assets/calendar-picker.png)
 
 ## License
 This project is covered under the MIT License. Feel free to use it wherever you like.
