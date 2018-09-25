@@ -1,7 +1,7 @@
 {
   "name": "@pderas/vue2-date-selector",
-  "version": "1.4.0",
-  "description": "A vue 2 component for selecting a date as 3 input boxes",
+  "version": "2.0.0",
+  "description": "A vue 2 component for selecting dates",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,17 +16,22 @@
     "vue2dateselector",
     "vue2date-selector",
     "vue2-date-selector",
-    "date-selector"
+    "date-selector",
+    "calendar-picker"
   ],
   "contributors": [
     {
       "name": "Cody Moorhouse",
       "email": "cody.moorhouse@pderas.com"
-      },
+    },
     {
       "name": "David Buss",
       "email": "david.buss@pderas.com"
-      }
+    },
+    {
+      "name": "Reed Jones",
+      "email": "reed.jones@pderas.com"
+    }
   ],
   "license": "MIT",
   "bugs": {

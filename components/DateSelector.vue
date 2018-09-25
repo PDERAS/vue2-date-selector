@@ -9,7 +9,7 @@
                     @change="update($event, 'm')"
                     required>
                 <option :value="null" disabled selected>{{ formatLabel('Month') }}</option>
-                <option v-for="m in months" :value="m.val">{{ formatLabel(m.label) }}</option>
+                <option v-for="m in months" :value="m.val" :key="m.val">{{ formatLabel(m.label) }}</option>
             </select>
         </div>
         <div class="date-selector-day">
@@ -21,7 +21,7 @@
                     @change="update($event, 'd')"
                     required>
                 <option :value="null" disabled selected>{{ formatLabel('Day') }}</option>
-                <option v-for="d in days" :value="d">{{ d }}</option>
+                <option v-for="day in days" :value="day" :key="day">{{ day }}</option>
             </select>
         </div>
         <div class="date-selector-year">
@@ -33,7 +33,7 @@
                     @change="update($event, 'y')"
                     required>
                 <option :value="null" disabled selected>{{ formatLabel('Year') }}</option>
-                <option v-for="year in years" :value="year">{{ year }}</option>
+                <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
             </select>
         </div>
         <div class="date-selector-error" v-if="disabledError">
@@ -43,24 +43,22 @@
 </template>
 
 <script>
+    import { DateMixins } from '../mixins/mixins'
     export default {
+        mixins: [DateMixins],
         name: 'date-selector',
 
         props: {
             amountOfYearsAfter: {
-                type:       [ String, Number ],
-                default:    0,
-                validator:  function(val) {
-                    return !isNaN(val);
-                }
+                type: String|Number,
+                default: 0,
+                validator: val => !isNaN(val)
             },
 
             amountOfYears: {
-                type:       [ String, Number ],
-                default:    20,
-                validator:  function(val) {
-                    return !isNaN(val);
-                }
+                type: String|Number,
+                default: 20,
+                validator: val => !isNaN(val)
             },
 
             disabled: {
@@ -75,14 +73,12 @@
 
             formatFn: {
                 type: Function,
-                default: (val) =>  { return val; }
+                default: val => val
             },
 
             value: {
-                default:    function() { new Date() },
-                validator:  function(val) {
-                    return String(val) || val instanceof Date;
-                }
+                default: () => new Date(),
+                validator: val => String(val) || val instanceof Date
             }
         },
 
@@ -119,22 +115,18 @@
             days() {
                 var thirtyOneDayMonths = [1, 3, 5, 7, 8, 10, 12],
                     thirtyDayMonths = [4, 6, 9, 11],
-                    days = 0;
+                    days = 31;
 
                 if (this.month) {
-                    if (thirtyOneDayMonths.indexOf(this.month) > -1) {
+                    if (thirtyOneDayMonths.includes(this.month)) {
                         days = 31;
-                    } else if (thirtyDayMonths.indexOf(this.month) > -1) {
+                    } else if (thirtyDayMonths.includes(this.month)) {
                         days = 30;
+                    } else if (this.year && (this.year % 4 == 0)) {
+                        days = 29;
                     } else {
-                        if (this.year && (this.year % 4 == 0)) {
-                            days = 29;
-                        } else {
-                            days = 28;
-                        }
+                        days = 28;
                     }
-                } else {
-                    days = 31;
                 }
 
                 var values = [];
@@ -150,6 +142,7 @@
                         values.push(i);
                     }
                 }
+
                 return values;
             },
 
@@ -179,68 +172,17 @@
             },
 
             months() {
-                var months = [
-                    {
-                        val: 1,
-                        label: 'Jan'
-                    },
-                    {
-                        val: 2,
-                        label: 'Feb'
-                    },
-                    {
-                        val: 3,
-                        label: 'Mar'
-                    },
-                    {
-                        val: 4,
-                        label: 'Apr'
-                    },
-                    {
-                        val: 5,
-                        label: 'May'
-                    },
-                    {
-                        val: 6,
-                        label: 'Jun'
-                    },
-                    {
-                        val: 7,
-                        label: 'Jul'
-                    },
-                    {
-                        val: 8,
-                        label: 'Aug'
-                    },
-                    {
-                        val: 9,
-                        label: 'Sep'
-                    },
-                    {
-                        val: 10,
-                        label: 'Oct'
-                    },
-                    {
-                        val: 11,
-                        label: 'Nov'
-                    },
-                    {
-                        val: 12,
-                        label: 'Dec'
-                    }
-                ];
-
                 var values = [];
-                for (var i = 0; i < months.length; i++) {
+                for (var i = 0; i < this._allMonths.length; i++) {
                     if (this.disabled) {
-                        if (this.validate('month', months[i].val)) {
+                        if (this.validate('month', this._allMonths[i].val)) {
                             values.push(months[i]);
-                        } else if (this.month === months[i].val) {
+                        } else if (this.month === this._allMonths[i].val) {
                             this.month = null;
                             this.disabledError = true;
                         }
                     } else {
-                        values.push(months[i]);
+                        values.push(this._allMonths[i]);
                     }
                 }
 
