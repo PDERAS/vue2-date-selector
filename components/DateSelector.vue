@@ -90,12 +90,12 @@
         }),
 
         mounted() {
-            if (this.value) {
-                var converted = this.convertDate(this.value);
-                var { day, month, year } = converted;
-                this.day = day;
-                this.month = month;
-                this.year = year;
+            this.parseDate();
+        },
+
+        watch: {
+            value(val) {
+                this.parseDate();
             }
         },
 
@@ -225,6 +225,20 @@
         },
 
         methods: {
+            checkValidity(type, val) {
+                var valid = false;
+                if (this.destructuredDisabled.to &&
+                    val < this.destructuredDisabled.to[type]) {
+                    valid = true;
+                }
+
+                if (this.destructuredDisabled.from &&
+                    val > this.destructuredDisabled.from[type]) {
+                    valid = true;
+                }
+                return valid;
+            },
+
             convertDate(date) {
                 var converted = {
                     day: null,
@@ -246,22 +260,18 @@
                 return converted;
             },
 
-            checkValidity(type, val) {
-                var valid = false;
-                if (this.destructuredDisabled.to &&
-                    val < this.destructuredDisabled.to[type]) {
-                    valid = true;
-                }
-
-                if (this.destructuredDisabled.from &&
-                    val > this.destructuredDisabled.from[type]) {
-                    valid = true;
-                }
-                return valid;
-            },
-
             formatLabel(label) {
                 return this.formatFn(label);
+            },
+
+            parseDate() {
+                if (this.value) {
+                    var converted = this.convertDate(this.value);
+                    var { day, month, year } = converted;
+                    this.day = day;
+                    this.month = month;
+                    this.year = year;
+                }
             },
 
             update(e, type) {
