@@ -176,7 +176,7 @@
                 for (var i = 0; i < this._allMonths.length; i++) {
                     if (this.disabled) {
                         if (this.validate('month', this._allMonths[i].val)) {
-                            values.push(months[i]);
+                            values.push(this._allMonths[i]);
                         } else if (this.month === this._allMonths[i].val) {
                             this.month = null;
                             this.disabledError = true;
