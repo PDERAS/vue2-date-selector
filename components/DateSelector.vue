@@ -248,9 +248,9 @@
 
                 if (!(date instanceof Date)) {
                     var temp = date.split(' ')[0];
-                    converted.day = Number(temp.split('-')[2]);
-                    converted.month = Number(temp.split('-')[1]);
-                    converted.year = Number(temp.split('-')[0]);
+                    converted.day = Number(temp.split('-')[2]) || null;
+                    converted.month = Number(temp.split('-')[1]) || null;
+                    converted.year = Number(temp.split('-')[0]) || null;
                 } else if ((date instanceof Date)) {
                     converted.day = Number(date.getDate());
                     converted.month = Number(date.getMonth() + 1);
