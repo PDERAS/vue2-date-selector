@@ -52,13 +52,17 @@
             amountOfYearsAfter: {
                 type: String|Number,
                 default: 0,
-                validator: val => !isNaN(val)
+                validator: function(val) {
+                    return !isNaN(val);
+                }
             },
 
             amountOfYears: {
                 type: String|Number,
                 default: 20,
-                validator: val => !isNaN(val)
+                validator: function(val) {
+                    return !isNaN(val);
+                }
             },
 
             disabled: {
@@ -73,34 +77,42 @@
 
             formatFn: {
                 type: Function,
-                default: val => val
+                default: function(val) {
+                    return val;
+                }
             },
 
             value: {
-                default: () => new Date(),
-                validator: val => String(val) || val instanceof Date
+                default: function() {
+                    return new Date();
+                },
+                validator: function(val) {
+                    return String(val) || val instanceof Date;
+                }
             }
         },
 
-        data: () => ({
-            day:    null,
-            month:  null,
-            year:   null,
-            disabledError: false
-        }),
+        data: function() {
+            return {
+                day:    null,
+                month:  null,
+                year:   null,
+                disabledError: false
+            };
+        },
 
-        mounted() {
+        mounted: function() {
             this.parseDate();
         },
 
         watch: {
-            value(val) {
+            value: function(val) {
                 this.parseDate();
             }
         },
 
         computed: {
-            destructuredDisabled() {
+            destructuredDisabled: function() {
                 var disabled = {};
                 if (this.disabled.to) {
                     disabled.to = this.convertDate(this.disabled.to);
@@ -112,7 +124,7 @@
                 return disabled;
             },
 
-            days() {
+            days: function() {
                 var thirtyOneDayMonths = [1, 3, 5, 7, 8, 10, 12],
                     thirtyDayMonths = [4, 6, 9, 11],
                     days = 31;
@@ -146,7 +158,7 @@
                 return values;
             },
 
-            displayError() {
+            displayError: function() {
                 var error = '',
                     toDate,
                     fromDate;
@@ -171,7 +183,7 @@
                 return error;
             },
 
-            months() {
+            months: function() {
                 var values = [];
                 for (var i = 0; i < this._allMonths.length; i++) {
                     if (this.disabled) {
@@ -189,7 +201,7 @@
                 return values;
             },
 
-            years() {
+            years: function() {
                 var years = [];
                 var currentYear = new Date().getFullYear();
                 if (this.amountOfYearsAfter > 0) {
@@ -225,7 +237,7 @@
         },
 
         methods: {
-            checkValidity(type, val) {
+            checkValidity: function(type, val) {
                 var valid = false;
                 if (this.destructuredDisabled.to &&
                     val < this.destructuredDisabled.to[type]) {
@@ -239,7 +251,7 @@
                 return valid;
             },
 
-            convertDate(date) {
+            convertDate: function(date) {
                 var converted = {
                     day: null,
                     month: null,
@@ -260,21 +272,20 @@
                 return converted;
             },
 
-            formatLabel(label) {
+            formatLabel: function(label) {
                 return this.formatFn(label);
             },
 
-            parseDate() {
+            parseDate: function() {
                 if (this.value) {
                     var converted = this.convertDate(this.value);
-                    var { day, month, year } = converted;
-                    this.day = day;
-                    this.month = month;
-                    this.year = year;
+                    this.day = converted.day || null;
+                    this.month = converted.month || null;
+                    this.year = converted.year || null;
                 }
             },
 
-            update(e, type) {
+            update: function(e, type) {
                 switch (type) {
                     case 'd':
                         this.day = Number(e.target.value);
@@ -291,7 +302,7 @@
                 this.$emit('input', date);
             },
 
-            validate(type, val) {
+            validate: function(type, val) {
                 var valid = true;
                 switch (type) {
                     case 'day':

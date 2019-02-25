@@ -73,28 +73,32 @@ export default {
         },
         highlighted: {
             type: Object,
-            default: _ => new Object
+            default: function() {
+                return new Object()
+            }
         }
     },
-    data: () => ({
-        weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
-        tracking: false,
-        startDate: null,
-        endDate: null,
-        activeMonth: null,
-        activeYear: null
-    }),
+    data: function() {
+        return {
+            weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
+            tracking: false,
+            startDate: null,
+            endDate: null,
+            activeMonth: null,
+            activeYear: null
+        }
+    },
     computed: {
-        startDay() {
+        startDay: function() {
             return new Date(this.activeYear, this.activeMonth - 1, 1).getDay();
         },
-        endDay() {
+        endDay: function() {
             return 6 - new Date(this.activeYear, this.activeMonth - 1, this.daysInMonth).getDay();
         },
-        daysInMonth() {
+        daysInMonth: function() {
             return new Date(this.activeYear, this.activeMonth, 0).getDate();
         },
-        returnData() {
+        returnData: function() {
             return this.multiDaySelect
                 ? {
                       start: this.startDate,
@@ -103,7 +107,7 @@ export default {
                 : { day: this.startDate };
         },
     },
-    created() {
+    created: function() {
         this.activeMonth = this.month || new Date().getMonth() + 1;
         this.activeYear = this.year || new Date().getFullYear();
         if (!this.month) {
@@ -120,7 +124,7 @@ export default {
         }
     },
     methods: {
-        generatedClass(day) {
+        generatedClass: function(day) {
             let classes = [];
             let compareDate = new Date(this.activeYear, this.activeMonth - 1, day);
             if (this.startDate && compareDate.getTime() === this.startDate.getTime()) {
@@ -142,7 +146,7 @@ export default {
 
             return classes.join(' ');
         },
-        handleTracking(day) {
+        handleTracking: function(day) {
             let newDate = new Date(this.activeYear, this.activeMonth - 1, day);
             if (!this.multiDaySelect) {
                 this.initiateTracking(newDate, false);
@@ -158,16 +162,19 @@ export default {
 
             this.$emit('input', this.returnData);
         },
-        initiateTracking(start, tracking = true) {
+        initiateTracking: function(start, tracking) {
+            if (tracking == undefined) {
+                tracking = true;
+            }
             this.startDate = start;
             this.endDate = null;
             this.tracking = tracking;
         },
-        finalizeTracking(end) {
+        finalizeTracking: function(end) {
             this.endDate = end;
             this.tracking = false;
         },
-        prevMonth() {
+        prevMonth: function() {
             this.activeMonth--;
             if (this.activeMonth <= 0) {
                 this.activeMonth = 12;
@@ -176,7 +183,7 @@ export default {
             this.$emit('update:month', this.activeMonth);
             this.$emit('update:year', this.activeYear);
         },
-        nextMonth() {
+        nextMonth: function() {
             this.activeMonth++;
             if (this.activeMonth > 12) {
                 this.activeMonth = 1;
@@ -185,26 +192,28 @@ export default {
             this.$emit('update:month', this.activeMonth);
             this.$emit('update:year', this.activeYear);
         },
-        hasToolTip(day) {
+        hasToolTip: function(day) {
             return Object.keys(this.highlighted).includes(this.formattedString(day))
         },
-        getToolTip(day) {
+        getToolTip: function(day) {
             const t = this.highlighted && this.highlighted[this.formattedString(day)]
             return t && t.name || ''
         },
-        formattedString(day) {
-            const lp = str => `${str}`.length === 1 ? `0${str}` : `${str}`;
-            return `${lp(day)}-${lp(this.activeMonth)}-${this.activeYear}`
+        formattedString: function(day) {
+            const lp = function(str) {
+                return str.length === 1 ? "0" + str : str;
+            }
+            return lp(day) + "-" + lp(this.activeMonth) + "-" + this.activeYear;
         },
     },
     watch: {
-        year(newVal, oldVal) {
+        year: function(newVal, oldVal) {
             this.activeYear = newVal;
         },
-        month(newVal, oldVal) {
+        month: function(newVal, oldVal) {
             this.activeMonth = newVal;
         },
-        value(val) {
+        value: function(val) {
             if (this.multiDaySelect) {
                 this.startDate = val.start;
                 this.endDate = val.end;
