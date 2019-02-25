@@ -1,6 +1,6 @@
 export const DateMixins = {
     computed: {
-        _allMonths() {
+        _allMonths: function() {
             return [
                 {
                     val: 1,
